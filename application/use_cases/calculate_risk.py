@@ -23,7 +23,7 @@ class CalculateRiskUseCase:
         self.formula_service = formula_service
 
     def execute(self, event: VulnerabilityFoundEvent) -> None:
-        logger.info(f"Executing risk calculation for vulnerability_id: {event.vulnerability_id}")
+        logger.info(f"Executing risk calculation for vulnerability_id: {event.id}")
 
         # 1. Fetch the required asset data
         asset = self.asset_repo.find_by_id(event.asset_id)
@@ -37,8 +37,8 @@ class CalculateRiskUseCase:
         # 3. Create the risk entity
         new_risk = Risk(
             asset_id=event.asset_id,
-            vulnerability_id=event.vulnerability_id,
-            scan_id=asset.scan_id,
+            vulnerability_id=event.id,
+            scan_id=asset.asset_id,
             ic_score=risk_scores["ic_score"],
             pc_score=risk_scores["pc_score"],
             nr_score=risk_scores["nr_score"]

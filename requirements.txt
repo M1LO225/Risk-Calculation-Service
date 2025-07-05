@@ -3,5 +3,3 @@ pydantic-settings
 sqlalchemy
 psycopg2-binary
 kafka-python
-requests
-python-nmap
