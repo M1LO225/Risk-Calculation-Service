@@ -1,0 +1,14 @@
+# risk-calculation-service/requirements.txt
+
+# For Pydantic models and data validation
+pydantic==2.7.1
+# For loading configuration from environment variables and .env files
+pydantic-settings==2.2.1
+# For database ORM
+SQLAlchemy==2.0.30
+# PostgreSQL database adapter for SQLAlchemy
+psycopg2-binary==2.9.9
+# Kafka client for Python
+kafka-python==2.0.2
+# For UUID generation (though pydantic handles default_factory)
+# uuid
