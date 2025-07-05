@@ -1,31 +1,29 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
-from core.config import settings # Importamos la configuración
+from core.config import settings
 
-# Base para los modelos declarativos de SQLAlchemy
-Base = declarative_base()
+# --- Connection for ASSET Database (Read-Only) ---
+asset_engine = create_engine(settings.ASSET_DATABASE_URL)
+AssetSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=asset_engine)
 
-# --- Configuración para la Base de Datos de Riesgos (donde este servicio escribe) ---
-engine_risk_db = create_engine(settings.RISK_DATABASE_URL, pool_pre_ping=True)
-RiskSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine_risk_db)
+# --- Connection for RISK Database (Write) ---
+risk_engine = create_engine(settings.RISK_DATABASE_URL)
+RiskSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=risk_engine)
 
-# --- Configuración para la Base de Datos de Activos (donde este servicio lee) ---
-# En un entorno real, estas URLs apuntarían a bases de datos distintas o réplicas.
-# Aquí, por simplicidad, podrían apuntar a la misma DB física pero con esquemas/conexiones lógicas separadas.
-engine_asset_db = create_engine(settings.ASSET_DATABASE_URL, pool_pre_ping=True)
-AssetSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine_asset_db)
+# Base for defining ORM models for the RISK database
+RiskBase = declarative_base()
 
-def get_risk_db_session():
-    """Dependency for getting a DB session for risk operations."""
-    db = RiskSessionLocal()
+# Dependency to get an Asset DB session
+def get_asset_db():
+    db = AssetSessionLocal()
     try:
         yield db
     finally:
         db.close()
 
-def get_asset_db_session():
-    """Dependency for getting a DB session for asset operations."""
-    db = AssetSessionLocal()
+# Dependency to get a Risk DB session
+def get_risk_db():
+    db = RiskSessionLocal()
     try:
         yield db
     finally:
